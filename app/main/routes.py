@@ -36,3 +36,17 @@ def inicializar_db():
         return "<h1>SUCESSO!</h1><p>Todas as tabelas do banco de dados foram criadas. O sistema está pronto. LEMBRE-SE DE REMOVER ESTA ROTA IMEDIATAMENTE.</p>"
     except Exception as e:
         return f"<h1>ERRO!</h1><p>Ocorreu um erro ao criar as tabelas: {e}</p>"
+    
+    # --- ADICIONE TODA ESTA NOVA FUNÇÃO ABAIXO ---
+@main_bp.route('/criar-meu-admin-agora/<string:username>/<string:password>')
+def criar_admin_remotamente(username, password):
+    """ Rota secreta para criar o primeiro usuário em produção sem shell. """
+    user = User.query.filter_by(username=username).first()
+    if not user:
+        new_admin = User(username=username)
+        new_admin.set_password(password)
+        db.session.add(new_admin)
+        db.session.commit()
+        return f"<h1>SUCESSO!</h1><p>Usuário '{username}' criado com a senha fornecida.</p><p><b>REMOVA ESTA ROTA DO SEU CÓDIGO AGORA.</b></p>"
+    
+    return f"<h1>AVISO!</h1><p>Usuário '{username}' já existe no banco de dados.</p><p><b>REMOVA ESTA ROTA DO SEU CÓDIGO AGORA.</b></p>"
