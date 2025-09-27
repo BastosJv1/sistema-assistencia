@@ -1,5 +1,7 @@
 from flask import Blueprint, render_template
+from app import db
 from app.models import db, User
+
 
 
 main_bp = Blueprint('main', __name__)
@@ -25,3 +27,12 @@ def setup_admin():
         return f"<h1>Usuário '{username_desejado}' criado com sucesso!</h1><p>Pode fechar esta aba e fazer o login. LEMBRE-SE DE REMOVER ESTA ROTA AGORA.</p>"
     
     return f"<h1>Usuário '{username_desejado}' já existe.</h1><p>Pode fechar esta aba e fazer o login. LEMBRE-SE DE REMOVER ESTA ROTA AGORA.</p>"
+
+# --- ADICIONE TODA ESTA NOVA FUNÇÃO ABAIXO ---
+@main_bp.route('/inicializar-banco-de-dados-agora/um-segredo-para-o-setup')
+def inicializar_db():
+    try:
+        db.create_all()
+        return "<h1>SUCESSO!</h1><p>Todas as tabelas do banco de dados foram criadas. O sistema está pronto. LEMBRE-SE DE REMOVER ESTA ROTA IMEDIATAMENTE.</p>"
+    except Exception as e:
+        return f"<h1>ERRO!</h1><p>Ocorreu um erro ao criar as tabelas: {e}</p>"
