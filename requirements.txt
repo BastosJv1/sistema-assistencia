@@ -1,0 +1,8 @@
+Flask
+Flask-SQLAlchemy
+fpdf2
+Flask-Login
+Werkzeug
+pytz
+gunicorn
+psycopg2-binary

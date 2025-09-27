@@ -1,0 +1,66 @@
+{% extends 'base.html' %}
+{% block title %}Acesso ao Sistema{% endblock %}
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center align-items-center" style="min-height: 80vh;">
+        <div class="col-lg-7 text-center">
+            <i class="ti ti-circuit-board" style="font-size: 4rem; color: var(--primary-color);"></i>
+            <h1 class="display-5 mt-3">// Gerenciamento de Aparelhos</h1>
+            <p class="lead text-muted mb-5">Seu hub de gerenciamento e consulta de reparos.</p>
+            <div id="choice-section">
+                <h4 class="mb-4">Como você gostaria de acessar?</h4>
+                <div class="d-grid gap-3 d-sm-flex justify-content-sm-center">
+                    <button id="btn-cliente" class="btn btn-outline-light btn-lg px-4"><i class="ti ti-user-circle"></i> Sou Cliente</button>
+                    <button id="btn-tecnico" class="btn btn-primary btn-lg px-4"><i class="ti ti-shield-lock"></i> Sou o Técnico</button>
+                </div>
+            </div>
+            <div id="client-form-section" style="display: none;">
+                <div class="card mt-4"><div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4"><i class="ti ti-user-circle"></i> Portal do Cliente</h4>
+                    <form action="{{ url_for('portal.login_portal') }}" method="POST">
+                        <div class="mb-3 text-start"><label for="os_number_cliente" class="form-label">Número da OS</label><input type="text" class="form-control" id="os_number_cliente" name="os_number" required></div>
+                        <div class="mb-3 text-start"><label for="telefone_cliente" class="form-label">Seu Telefone</label><input type="text" class="form-control" id="telefone_cliente" name="telefone" required></div>
+                        <div class="d-grid"><button type="submit" class="btn btn-outline-light">Consultar Status</button></div>
+                    </form>
+                    <button class="btn btn-link text-muted mt-3" onclick="showChoice()">Voltar</button>
+                </div></div>
+            </div>
+            <div id="tech-form-section" style="display: none;">
+                <div class="card mt-4"><div class="card-body p-4">
+                    <h4 class="card-title text-center mb-4"><i class="ti ti-shield-lock"></i> Acesso Administrativo</h4>
+                    <form action="{{ url_for('auth.login') }}" method="POST">
+                        <div class="mb-3 text-start"><label for="username" class="form-label">Usuário</label><input type="text" class="form-control" id="username" name="username" required></div>
+                        <div class="mb-3 text-start"><label for="password" class="form-label">Senha</label><input type="password" class="form-control" id="password" name="password" required></div>
+                        <div class="d-grid"><button type="submit" class="btn btn-primary">Entrar</button></div>
+                    </form>
+                    <button class="btn btn-link text-muted mt-3" onclick="showChoice()">Voltar</button>
+                </div></div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+    const choiceSection = document.getElementById('choice-section');
+    const clientForm = document.getElementById('client-form-section');
+    const techForm = document.getElementById('tech-form-section');
+    const btnCliente = document.getElementById('btn-cliente');
+    const btnTecnico = document.getElementById('btn-tecnico');
+    btnCliente.addEventListener('click', () => {
+        choiceSection.style.display = 'none';
+        techForm.style.display = 'none';
+        clientForm.style.display = 'block';
+    });
+    btnTecnico.addEventListener('click', () => {
+        choiceSection.style.display = 'none';
+        clientForm.style.display = 'none';
+        techForm.style.display = 'block';
+    });
+    function showChoice() {
+        clientForm.style.display = 'none';
+        techForm.style.display = 'none';
+        choiceSection.style.display = 'block';
+    }
+</script>
+{% endblock %}

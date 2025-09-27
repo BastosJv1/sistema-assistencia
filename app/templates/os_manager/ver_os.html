@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+{% block title %}OS Nº {{ os.os_number }}{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-0"><i class="ti ti-ticket"></i> Ordem de Serviço Nº {{ os.os_number }}</h1>
+            <p class="text-muted mb-0">Cliente: {{ os.cliente.nome }} | Aparelho: {{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</p>
+        </div>
+        <div>
+            <button type="button" class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{{ url_for('os_manager.excluir_os', os_id=os.id) }}" data-name="OS Nº {{ os.os_number }}">
+                <i class="ti ti-trash"></i> Excluir OS
+            </button>
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#faturamentoModal" {% if os.data_pagamento %}disabled{% endif %}>
+                <i class="ti ti-cash-banknote"></i> Faturar OS
+            </button>
+            <a href="{{ url_for('os_manager.gerar_pdf_os', os_id=os.id) }}" class="btn btn-outline-light" target="_blank"><i class="ti ti-file-type-pdf"></i> Gerar PDF</a>
+        </div>
+    </div>
+
+    {% if os.data_pagamento %}
+    <div class="alert alert-success">
+        <strong>OS Faturada!</strong> Pagamento de R$ {{ "%.2f"|format(os.valor_pago) }} recebido via {{ os.metodo_pagamento }} em {{ os.data_pagamento|localtime('%d/%m/%Y') }}.
+    </div>
+    {% endif %}
+
+    <div class="row g-4 mt-2">
+        <div class="col-lg-7">
+            <div class="card mb-4">
+                <div class="card-header"><h4><i class="ti ti-photo"></i> Fotos do Reparo</h4></div>
+                <div class="card-body">
+                    <div class="row g-2 mb-3">
+                        {% for foto in os.fotos %}
+                        <div class="col-6 col-md-4 col-lg-3">
+                            <div class="position-relative">
+                                <a href="{{ url_for('static', filename='uploads/os_fotos/' + foto.filename) }}" target="_blank">
+                                    <img src="{{ url_for('static', filename='uploads/os_fotos/' + foto.filename) }}" class="img-fluid rounded" alt="Foto do reparo">
+                                </a>
+                                {% if foto.is_principal %}
+                                    <span class="badge bg-primary position-absolute top-0 start-0 m-1">Principal</span>
+                                {% else %}
+                                    <a href="{{ url_for('os_manager.set_foto_principal', os_id=os.id, foto_id=foto.id) }}" class="btn btn-sm btn-dark position-absolute top-0 start-0 m-1" title="Definir como Principal"><i class="ti ti-star"></i></a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% else %}
+                        <p class="text-muted">Nenhuma foto enviada para esta OS.</p>
+                        {% endfor %}
+                    </div>
+                    <form method="POST" enctype="multipart/form-data">
+                        <input type="hidden" name="form_name" value="upload_fotos">
+                        <div class="input-group">
+                            <input class="form-control" type="file" id="fotos" name="fotos" multiple>
+                            <button type="submit" class="btn btn-outline-light">Enviar</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h4><i class="ti ti-stethoscope"></i> Diagnóstico e Anotações Técnicas</h4></div>
+                <div class="card-body">
+                    <p class="text-muted fst-italic">
+                        {{ os.diagnostico_tecnico or "Nenhuma anotação técnica registrada." }}
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card mb-4">
+                <div class="card-header"><h4><i class="ti ti-settings"></i> Painel de Controle</h4></div>
+                <div class="card-body">
+                    <form method="POST">
+                        <input type="hidden" name="form_name" value="update_status">
+                        <div class="mb-3">
+                            <label for="diagnostico_tecnico" class="form-label">Editar Anotações Técnicas</label>
+                            <textarea class="form-control" id="diagnostico_tecnico" name="diagnostico_tecnico" rows="3" {% if os.data_pagamento %}disabled{% endif %}>{{ os.diagnostico_tecnico or '' }}</textarea>
+                        </div>
+                        <div class="mb-3">
+                            <label for="status" class="form-label">Status do Reparo</label>
+                            <select class="form-select" id="status" name="status" {% if os.data_pagamento %}disabled{% endif %}>
+                                {% for option in status_options %}
+                                <option value="{{ option }}" {% if option == os.status %}selected{% endif %}>{{ option }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <label for="custo_pecas" class="form-label">Custo Peças (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="custo_pecas" name="custo_pecas" value="{{ os.custo_pecas }}" {% if os.data_pagamento %}disabled{% endif %}>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <label for="valor_servico" class="form-label">Mão de Obra (R$)</label>
+                                <input type="number" step="0.01" class="form-control" id="valor_servico" name="valor_servico" value="{{ os.valor_servico }}" {% if os.data_pagamento %}disabled{% endif %}>
+                            </div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary" {% if os.data_pagamento %}disabled{% endif %}>Salvar Alterações</button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <h5 class="mb-0">Valor Total a Cobrar: R$ {{ "%.2f"|format(os.valor_total) }}</h5>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><h4><i class="ti ti-list-check"></i> Checklist de Entrada</h4></div>
+                <ul class="list-group list-group-flush">
+                    {% for item in os.checklist_items %}
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <div>
+                            {{ item.item_nome }}
+                            {% if item.observacoes %}
+                                <small class="d-block text-muted">{{ item.observacoes }}</small>
+                            {% endif %}
+                        </div>
+                        <span class="badge {% if item.status == 'OK' %}bg-success{% elif item.status == 'Defeito' %}bg-danger{% else %}bg-secondary{% endif %}">{{ item.status }}</span>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="faturamentoModal" tabindex="-1" aria-labelledby="faturamentoModalLabel" aria-hidden="true">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="faturamentoModalLabel">Faturar OS Nº {{ os.os_number }}</h5>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <form method="POST">
+            <div class="modal-body">
+                <input type="hidden" name="form_name" value="faturar_os">
+                <p>Cliente: <strong>{{ os.cliente.nome }}</strong></p>
+                <h4>Valor Total: R$ {{ "%.2f"|format(os.valor_total) }}</h4>
+                <hr>
+                <div class="mb-3">
+                    <label for="metodo_pagamento" class="form-label">Método de Pagamento</label>
+                    <select class="form-select" id="metodo_pagamento" name="metodo_pagamento">
+                        {% for option in payment_options %}
+                        <option value="{{ option }}">{{ option }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="valor_pago" class="form-label">Valor Recebido (R$)</label>
+                    <input type="number" step="0.01" class="form-control" id="valor_pago" name="valor_pago" value="{{ os.valor_total }}">
+                </div>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+              <button type="submit" class="btn btn-success">Confirmar Pagamento</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+{% endblock %}

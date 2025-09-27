@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+{% block title %}Fornecedores{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="ti ti-truck-delivery"></i> Fornecedores</h1>
+        <a href="{{ url_for('fornecedor.novo_fornecedor') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Cadastrar Fornecedor</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover table-vcenter mb-0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Pedido Mínimo</th>
+                        <th>Frete</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for f in fornecedores %}
+                    <tr>
+                        <td><strong>{{ f.nome }}</strong></td>
+                        <td>{{ f.telefone or '-' }}</td>
+                        <td>R$ {{ "%.2f"|format(f.pedido_minimo or 0) }}</td>
+                        <td>R$ {{ "%.2f"|format(f.frete or 0) }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('fornecedor.editar_fornecedor', id=f.id) }}" class="btn btn-sm btn-outline-light me-2">
+                                <i class="ti ti-edit"></i> Editar
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{{ url_for('fornecedor.excluir_fornecedor', id=f.id) }}" data-name="{{ f.nome }}">
+                                <i class="ti ti-trash"></i> Excluir
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-5">
+                            <h4>Nenhum fornecedor cadastrado.</h4>
+                            <p>Clique em "Cadastrar Fornecedor" para começar.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+<div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        Tem certeza que deseja excluir o fornecedor <strong id="fornecedorName"></strong>? Esta ação não pode ser desfeita.
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+        <form id="deleteForm" method="POST" action="">
+            <button type="submit" class="btn btn-danger">Sim, Excluir</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Script para o Modal de Confirmação de Exclusão
+    const confirmDeleteModal = document.getElementById('confirmDeleteModal');
+    confirmDeleteModal.addEventListener('show.bs.modal', function (event) {
+        const button = event.relatedTarget;
+        const url = button.getAttribute('data-url');
+        const name = button.getAttribute('data-name');
+        
+        const modalBodyName = confirmDeleteModal.querySelector('#fornecedorName');
+        const deleteForm = confirmDeleteModal.querySelector('#deleteForm');
+        
+        modalBodyName.textContent = name;
+        deleteForm.action = url;
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard Financeiro{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h1 class="mb-0">Dashboard</h1>
+            <p class="text-muted mb-0">Bem-vindo, {{ current_user.username }}! Hoje é {{ data_atual.strftime('%d/%m/%Y') }}.</p>
+        </div>
+    </div>
+
+    <h4 class="mb-3"><i class="ti ti-calendar-stats"></i> Resumo do Mês Atual</h4>
+    <div class="row">
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3"><i class="ti ti-cash" style="font-size: 2rem; color: var(--primary-color);"></i></div>
+                    <div>
+                        <div class="text-muted">Faturamento no Mês</div>
+                        <div class="h4 mb-0">{{ kpis.mes_atual.faturamento }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3"><i class="ti ti-chart-infographic" style="font-size: 2rem; color: #2ecc71;"></i></div>
+                    <div>
+                        <div class="text-muted">Lucro no Mês</div>
+                        <div class="h4 mb-0">{{ kpis.mes_atual.lucro }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3"><i class="ti ti-tool" style="font-size: 2rem; color: #9b59b6;"></i></div>
+                    <div>
+                        <div class="text-muted">Serviços Concluídos no Mês</div>
+                        <div class="h4 mb-0">{{ kpis.mes_atual.os_concluidas }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+    
+    <h4 class="mb-3"><i class="ti ti-trending-up"></i> Métricas de Performance (Geral)</h4>
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3"><i class="ti ti-ticket" style="font-size: 2rem; color: #e67e22;"></i></div>
+                    <div>
+                        <div class="text-muted">Ticket Médio por Serviço</div>
+                        <div class="h4 mb-0">{{ kpis.performance.ticket_medio }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card p-3 mb-4">
+                <div class="d-flex align-items-center">
+                    <div class="me-3"><i class="ti ti-coin" style="font-size: 2rem; color: #f1c40f;"></i></div>
+                    <div>
+                        <div class="text-muted">Lucro Médio por Serviço</div>
+                        <div class="h4 mb-0">{{ kpis.performance.lucro_medio_por_os }}</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <hr>
+
+    <h4 class="mb-3"><i class="ti ti-report-money"></i> Visão Geral (Desde o Início)</h4>
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card p-3 mb-3"><div class="d-flex align-items-center"><div class="me-3"><i class="ti ti-scale" style="font-size: 2rem;"></i></div><div><div class="text-muted">Faturamento Total</div><div class="h5 mb-0">{{ kpis.geral.faturamento }}</div></div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 mb-3"><div class="d-flex align-items-center"><div class="me-3"><i class="ti ti-receipt-2" style="font-size: 2rem;"></i></div><div><div class="text-muted">Custo Total (Peças)</div><div class="h5 mb-0">{{ kpis.geral.custo_pecas }}</div></div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 mb-3"><div class="d-flex align-items-center"><div class="me-3"><i class="ti ti-zoom-money" style="font-size: 2rem;"></i></div><div><div class="text-muted">Lucro Total</div><div class="h5 mb-0">{{ kpis.geral.lucro }}</div></div></div></div>
+        </div>
+        <div class="col-md-3">
+            <div class="card p-3 mb-3"><div class="d-flex align-items-center"><div class="me-3"><i class="ti ti-checks" style="font-size: 2rem;"></i></div><div><div class="text-muted">Total de Serviços Concluídos</div><div class="h5 mb-0">{{ kpis.geral.total_os_concluidas }}</div></div></div></div>
+        </div>
+    </div>
+{% endblock %}

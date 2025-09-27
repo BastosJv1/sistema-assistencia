@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}Histórico de {{ cliente.nome }}{% endblock %}
+{% block content %}
+    <h1 class="mb-1"><i class="ti ti-user-circle"></i> {{ cliente.nome }}</h1>
+    <p class="text-muted">Telefone: {{ cliente.telefone }}</p>
+    <hr>
+
+    <h4 class="mb-3">Histórico de Ordens de Serviço</h4>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover table-vcenter mb-0">
+                <thead>
+                    <tr>
+                        <th>OS Nº</th>
+                        <th>Data Entrada</th>
+                        <th>Aparelho</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for os in cliente.ordens_servico|sort(attribute='data_entrada', reverse=True) %}
+                    <tr>
+                        <td>{{ os.os_number }}</td>
+                        <td>{{ os.data_entrada.strftime('%d/%m/%Y') }}</td>
+                        <td>{{ os.modelo }}</td>
+                        <td>
+                            {% set status_class = os.status.lower().replace(" ", "-").replace("ç", "c").replace("ã", "a") %}
+                            <span class="status-dot status-{{ status_class }}"></span>
+                            {{ os.status }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('os_manager.ver_os', os_id=os.id) }}" class="btn btn-sm btn-outline-light">
+                                <i class="ti ti-ticket"></i> Ver OS
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" class="text-center text-muted py-4">
+                            <p class="mb-0">Nenhum reparo registrado para este cliente.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <a href="{{ url_for('cliente.listar_clientes') }}" class="btn btn-secondary mt-4"><i class="ti ti-arrow-left"></i> Voltar para a Lista de Clientes</a>
+{% endblock %}

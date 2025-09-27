@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Ordens de Serviço{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="ti ti-list-details"></i> Ordens de Serviço</h1>
+        <a href="{{ url_for('os_manager.criar_os') }}" class="btn btn-primary"><i class="ti ti-plus"></i> Criar Nova OS</a>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover table-vcenter mb-0">
+                <thead>
+                    <tr>
+                        <th>OS Nº</th>
+                        <th>Data Entrada</th>
+                        <th>Cliente</th>
+                        <th>Aparelho</th>
+                        <th>Status</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for os in lista_os %}
+                    <tr>
+                        <td>{{ os.os_number }}</td>
+                        <td>{{ os.data_entrada|localtime('%d/%m/%Y') }}</td>
+                        <td>{{ os.cliente.nome }}</td>
+                        <td>{{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</td>
+                        <td>
+                            {% set status_class = os.status.lower().replace(" ", "-").replace("ç", "c").replace("ã", "a") %}
+                            <span class="status-dot status-{{ status_class }}"></span>
+                            {{ os.status }}
+                        </td>
+                        <td class="text-end">
+                            <a href="{{ url_for('os_manager.ver_os', os_id=os.id) }}" class="btn btn-sm btn-outline-light me-2">
+                                <i class="ti ti-edit"></i> Ver/Editar
+                            </a>
+                            <button type="button" class="btn btn-sm btn-outline-danger" data-bs-toggle="modal" data-bs-target="#confirmDeleteModal" data-url="{{ url_for('os_manager.excluir_os', os_id=os.id) }}" data-name="OS Nº {{ os.os_number }}">
+                                <i class="ti ti-trash"></i> Excluir
+                            </button>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-5">
+                            <h4>Nenhuma Ordem de Serviço registrada.</h4>
+                            <p>Clique em "Criar Nova OS" para começar.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

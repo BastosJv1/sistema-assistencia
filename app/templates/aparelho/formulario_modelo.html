@@ -1,0 +1,27 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+    <h1>{{ titulo }}</h1>
+    <hr>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="mb-3">
+                    <label for="marca" class="form-label">Marca</label>
+                    <input type="text" class="form-control" id="marca" name="marca" value="{{ modelo.marca if modelo else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="nome_modelo" class="form-label">Nome do Modelo</label>
+                    <input type="text" class="form-control" id="nome_modelo" name="nome_modelo" value="{{ modelo.nome_modelo if modelo else '' }}" required>
+                </div>
+                <div class="mb-3">
+                    <label for="foto_vitrine_url" class="form-label">URL da Foto Vitrine (Link da imagem)</label>
+                    <input type="url" class="form-control" id="foto_vitrine_url" name="foto_vitrine_url" value="{{ modelo.foto_vitrine_url if modelo else '' }}">
+                    <div class="form-text">Dica: Pesquise o modelo no Google Imagens, abra a imagem e use "Copiar endereço da imagem".</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{{ url_for('aparelho.listar_modelos') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

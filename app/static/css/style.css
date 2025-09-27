@@ -1,0 +1,145 @@
+/* app/static/css/style.css - Versão 2.2 "Tech Glass" */
+
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&family=Share+Tech+Mono&display=swap');
+
+:root {
+    --primary-color: #00aeff;
+    --background-color: #10121a;
+    --surface-color: rgba(30, 30, 46, 0.6); /* Base para o efeito vidro */
+    --surface-solid-color: #1e1e2e; /* Cor sólida para popups e listas */
+    --text-color: #f0f0f0;
+    --text-muted-color: #8a8d93;
+    --border-color: rgba(0, 174, 255, 0.2);
+    --glow-color: rgba(0, 174, 255, 0.5);
+}
+
+body {
+    background-color: var(--background-color);
+    color: var(--text-color);
+    font-family: 'Roboto', sans-serif;
+    background-image: radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0);
+    background-size: 25px 25px;
+}
+
+.navbar {
+    background-color: var(--surface-color);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.navbar-brand {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary-color) !important;
+    text-shadow: 0 0 8px var(--glow-color);
+    font-size: 1.5rem;
+}
+
+.card {
+    background-color: var(--surface-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(0, 174, 255, 0.2);
+}
+
+.card-header h4 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary-color);
+}
+
+.form-control, .form-select {
+    background-color: rgba(16, 18, 26, 0.7);
+    border: 1px solid #444;
+    color: var(--text-color);
+}
+
+.form-control:focus, .form-select:focus {
+    background-color: rgba(16, 18, 26, 0.9);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 8px var(--glow-color);
+    color: var(--text-color);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #10121a;
+    font-weight: bold;
+    transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+    box-shadow: 0 0 15px var(--glow-color);
+    transform: translateY(-2px);
+    background-color: #33bbff;
+    border-color: #33bbff;
+}
+
+.table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: var(--surface-color);
+    --bs-table-color: var(--text-color);
+    border-color: var(--border-color);
+}
+
+/* --- ESTA É A REGRA QUE CORRIGE O HOVER DA TABELA --- */
+.table-hover > tbody > tr:hover > * {
+    --bs-table-accent-bg: rgba(0, 174, 255, 0.1); /* Fundo azulado sutil */
+    color: var(--primary-color) !important; /* Texto fica azul elétrico, não preto */
+}
+/* --- FIM DA CORREÇÃO --- */
+
+.list-group-item {
+    background-color: var(--surface-solid-color);
+    border-color: var(--border-color);
+    color: var(--text-color);
+}
+
+.modal-content {
+    background-color: var(--surface-solid-color);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+}
+
+.modal-header, .modal-footer {
+    border-color: var(--border-color);
+}
+.modal-header .btn-close {
+    filter: invert(1) grayscale(100%) brightness(200%);
+}
+
+h1, h4, h5 {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary-color);
+}
+
+.text-muted {
+    color: var(--text-muted-color) !important;
+}
+
+.badge {
+    background-color: var(--primary-color);
+    color: var(--background-color);
+    font-size: 0.9rem;
+    padding: 0.5em 0.7em;
+}
+
+.status-dot {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    margin-right: 8px;
+}
+.status-em-analise { background-color: #f1c40f; }
+.status-aguardando-peca { background-color: #e67e22; }
+.status-em-reparo { background-color: #3498db; }
+.status-aguardando-retirada { background-color: #9b59b6; }
+.status-finalizado, .status-finalizado-e-pago { background-color: #2ecc71; }

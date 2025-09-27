@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% block title %}{{ titulo }}{% endblock %}
+{% block content %}
+    <h1>{{ titulo }}</h1>
+    <hr>
+    <div class="card">
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="nome" class="form-label">Nome do Fornecedor (Obrigatório)</label>
+                        <input type="text" class="form-control" id="nome" name="nome" value="{{ fornecedor.nome if fornecedor else '' }}" required>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="contato" class="form-label">Nome do Contato</label>
+                        <input type="text" class="form-control" id="contato" name="contato" value="{{ fornecedor.contato if fornecedor else '' }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="telefone" class="form-label">Telefone</label>
+                        <input type="text" class="form-control" id="telefone" name="telefone" value="{{ fornecedor.telefone if fornecedor else '' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="email" class="form-label">E-mail</label>
+                        <input type="email" class="form-control" id="email" name="email" value="{{ fornecedor.email if fornecedor else '' }}">
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label for="frete" class="form-label">Valor do Frete (R$)</label>
+                        <input type="number" step="0.01" class="form-control" id="frete" name="frete" value="{{ fornecedor.frete if fornecedor else '0.00' }}">
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label for="pedido_minimo" class="form-label">Pedido Mínimo (R$)</label>
+                        <input type="number" step="0.01" class="form-control" id="pedido_minimo" name="pedido_minimo" value="{{ fornecedor.pedido_minimo if fornecedor else '0.00' }}">
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <label for="website" class="form-label">Website</label>
+                    <input type="url" class="form-control" id="website" name="website" value="{{ fornecedor.website if fornecedor else '' }}">
+                </div>
+                <div class="mb-3">
+                    <label for="observacoes" class="form-label">Observações</label>
+                    <textarea class="form-control" id="observacoes" name="observacoes" rows="3">{{ fornecedor.observacoes if fornecedor else '' }}</textarea>
+                </div>
+                <button type="submit" class="btn btn-primary">Salvar</button>
+                <a href="{{ url_for('fornecedor.listar_fornecedores') }}" class="btn btn-secondary">Cancelar</a>
+            </form>
+        </div>
+    </div>
+{% endblock %}

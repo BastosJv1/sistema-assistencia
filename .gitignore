@@ -1,0 +1,7 @@
+# .gitignore
+venv/
+instance/
+__pycache__/
+*.pyc
+oficina.db
+*.db-journal

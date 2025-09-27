@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+{% block title %}Lista de Clientes{% endblock %}
+{% block content %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1 class="mb-0"><i class="ti ti-users"></i> Meus Clientes</h1>
+    </div>
+
+    <div class="card">
+        <div class="table-responsive">
+            <table class="table table-hover table-vcenter mb-0">
+                <thead>
+                    <tr>
+                        <th>Nome</th>
+                        <th>Telefone</th>
+                        <th>Total de Reparos</th>
+                        <th class="text-end">Ações</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for cliente in clientes %}
+                    <tr>
+                        <td>{{ cliente.nome }}</td>
+                        <td>{{ cliente.telefone }}</td>
+                        <td>{{ cliente.ordens_servico|length }}</td>
+                        <td class="text-end">
+                            <a href="{{ url_for('cliente.ver_cliente', cliente_id=cliente.id) }}" class="btn btn-sm btn-outline-light">
+                                <i class="ti ti-eye"></i> Ver Histórico
+                            </a>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="4" class="text-center text-muted py-5">
+                            <h4>Nenhum cliente registrado.</h4>
+                            <p>Crie uma nova Ordem de Serviço para adicionar o primeiro cliente.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

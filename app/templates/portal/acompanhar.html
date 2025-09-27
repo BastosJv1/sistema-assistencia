@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+
+{% block title %}Status da OS {{ os.os_number }}{% endblock %}
+
+{% block content %}
+    <div class="text-center">
+        <h1 class="mb-1">// Acompanhamento do Reparo</h1>
+        {# --- A CORREÇÃO ESTÁ AQUI --- #}
+        {# Acessamos as propriedades '.marca' e '.nome_modelo' do objeto 'os.modelo' #}
+        <p class="lead text-muted">Ordem de Serviço Nº {{ os.os_number }} para seu {{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</p>
+    </div>
+    <hr>
+    
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-5">
+            <div class="card">
+                <div class="card-header"><h4><i class="ti ti-device-mobile"></i> Seu Aparelho</h4></div>
+                <div class="card-body">
+                    <h5 class="card-title text-center mb-3">{{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</h5>
+                    {% set foto_principal = os.fotos|selectattr("is_principal", "equalto", True)|first %}
+                    {% if foto_principal %}
+                        <img src="{{ url_for('static', filename='uploads/os_fotos/' + foto_principal.filename) }}" class="img-fluid rounded mb-3" alt="Foto do reparo">
+                        <p class="text-center text-muted"><small>.</small></p>
+                    {% elif os.modelo.foto_vitrine_url %}
+                        <img src="{{ os.modelo.foto_vitrine_url }}" class="img-fluid rounded" alt="Foto vitrine do aparelho">
+                        <p class="text-center text-muted"><small>Foto de vitrine do modelo.</small></p>
+                    {% else %}
+                        <div class="text-center text-muted p-5">
+                            <i class="ti ti-photo-off" style="font-size: 3rem;"></i>
+                            <p>Nenhuma foto principal definida.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-7">
+            <div class="card">
+                <div class="card-header"><h4><i class="ti ti-history"></i> Linha do Tempo</h4></div>
+                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
+                    <ul class="timeline">
+                        {% for log in os.logs %}
+                        <li class="timeline-item">
+                            <span class="time"><i class="ti ti-clock"></i> {{ log.timestamp|localtime }}</span>
+                            <p class="event">{{ log.evento }}</p>
+                        </li>
+                        {% else %}
+                        <li class="timeline-item"><p class="event">Nenhum evento registrado.</p></li>
+                        {% endfor %}
+                    </ul>
+                </div>
+                <div class="card-footer text-center">
+                     <p class="mb-1"><strong>Status Atual:</strong></p>
+                     <h3><span class="badge bg-primary">{{ os.status }}</span></h3>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="text-center mt-4">
+         <a href="{{ url_for('portal.login_portal') }}">Consultar outra OS</a>
+    </div>
+{% endblock %}
