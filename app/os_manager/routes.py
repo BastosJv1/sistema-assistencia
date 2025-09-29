@@ -48,6 +48,19 @@ def listar_os():
     lista_os = OrdemServico.query.order_by(OrdemServico.data_entrada.desc()).all()
     return render_template('os_manager/listar_os.html', lista_os=lista_os)
 
+# --- NOVA ROTA DE API (EXEMPLO USANDO NOSSA CORREÇÃO) ---
+# Esta rota retorna apenas os dados em formato JSON. Útil para dashboards dinâmicos no futuro.
+@os_manager_bp.route('/api/os/lista')
+@login_required
+def api_listar_os():
+    """ Rota de API que retorna todas as OS em formato JSON. """
+    ordens_servico = OrdemServico.query.order_by(OrdemServico.data_entrada.desc()).all()
+    
+    # AQUI SIM, nós usamos a conversão para dicionário antes de retornar como JSON
+    lista_os_dict = [os.to_dict() for os in ordens_servico]
+    
+    return jsonify(lista_os_dict)
+
 @os_manager_bp.route('/os/nova', methods=['GET', 'POST'])
 @login_required
 def criar_os():
