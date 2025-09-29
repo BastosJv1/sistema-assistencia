@@ -5,58 +5,77 @@
 {% block content %}
     <div class="text-center">
         <h1 class="mb-1">// Acompanhamento do Reparo</h1>
-        {# --- A CORREÇÃO ESTÁ AQUI --- #}
-        {# Acessamos as propriedades '.marca' e '.nome_modelo' do objeto 'os.modelo' #}
         <p class="lead text-muted">Ordem de Serviço Nº {{ os.os_number }} para seu {{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</p>
     </div>
     <hr>
     
-    <div class="row g-4 justify-content-center">
-        <div class="col-md-5">
-            <div class="card">
-                <div class="card-header"><h4><i class="ti ti-device-mobile"></i> Seu Aparelho</h4></div>
-                <div class="card-body">
-                    <h5 class="card-title text-center mb-3">{{ os.modelo.marca }} {{ os.modelo.nome_modelo }}</h5>
-                    {% set foto_principal = os.fotos|selectattr("is_principal", "equalto", True)|first %}
-                    {% if foto_principal %}
-                        <img src="{{ url_for('static', filename='uploads/os_fotos/' + foto_principal.filename) }}" class="img-fluid rounded mb-3" alt="Foto do reparo">
-                        <p class="text-center text-muted"><small>.</small></p>
-                    {% elif os.modelo.foto_vitrine_url %}
-                        <img src="{{ os.modelo.foto_vitrine_url }}" class="img-fluid rounded" alt="Foto vitrine do aparelho">
-                        <p class="text-center text-muted"><small>Foto de vitrine do modelo.</small></p>
-                    {% else %}
-                        <div class="text-center text-muted p-5">
-                            <i class="ti ti-photo-off" style="font-size: 3rem;"></i>
-                            <p>Nenhuma foto principal definida.</p>
-                        </div>
-                    {% endif %}
+    <div class="card mb-4">
+        <div class="card-body text-center">
+            <h4 class="mb-3">Progresso Atual</h4>
+            <div class="progress-container mx-auto" style="max-width: 500px;">
+                <div class="progress-bar" style="width: {{ progress_percent }}%;">
+                    <span>{{ progress_percent }}%</span>
                 </div>
             </div>
+            <p class="mt-3 mb-0"><strong>Status:</strong> <span class="badge bg-primary">{{ os.status }}</span></p>
         </div>
-
-        <div class="col-md-7">
+    </div>
+    <div class="row g-4 justify-content-center">
+        <div class="col-md-12">
             <div class="card">
-                <div class="card-header"><h4><i class="ti ti-history"></i> Linha do Tempo</h4></div>
-                <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                    <ul class="timeline">
-                        {% for log in os.logs %}
-                        <li class="timeline-item">
-                            <span class="time"><i class="ti ti-clock"></i> {{ log.timestamp|localtime }}</span>
-                            <p class="event">{{ log.evento }}</p>
-                        </li>
-                        {% else %}
-                        <li class="timeline-item"><p class="event">Nenhum evento registrado.</p></li>
-                        {% endfor %}
-                    </ul>
-                </div>
-                <div class="card-footer text-center">
-                     <p class="mb-1"><strong>Status Atual:</strong></p>
-                     <h3><span class="badge bg-primary">{{ os.status }}</span></h3>
+                <div class="card-header"><h4><i class="ti ti-clipboard-list"></i> Detalhes do Serviço</h4></div>
+                <div class="card-body">
+                    
+                    <h5 class="card-title mb-3"><i class="ti ti-check"></i> Diagnóstico dos Componentes</h5>
+                    <div class="table-responsive mb-4">
+                        <table class="table checklist-table">
+                            <thead>
+                                <tr>
+                                    <th>Componente</th>
+                                    <th class="text-center">Status</th>
+                                    <th>Observações do Técnico</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in os.checklist_items %}
+                                <tr>
+                                    <td>{{ item.item_nome }}</td>
+                                    <td class="text-center">
+                                        {% if item.status == 'OK' %}
+                                            <span class="status-ok" title="OK"><i class="ti ti-circle-check"></i></span>
+                                        {% elif item.status == 'Não se aplica' %}
+                                            <span class="status-na" title="Não se aplica"><i class="ti ti-circle-minus"></i></span>
+                                        {% else %}
+                                            <span class="status-defeito" title="Com Defeito"><i class="ti ti-circle-x"></i></span>
+                                        {% endif %}
+                                    </td>
+                                    <td>{{ item.observacoes or 'Nenhuma.' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                    <hr style="border-color: var(--border-color);">
+
+                    <h5 class="card-title mt-4 mb-3"><i class="ti ti-history"></i> Histórico de Eventos</h5>
+                    <div style="max-height: 300px; overflow-y: auto;">
+                        <ul class="timeline">
+                            {% for log in os.logs %}
+                            <li class="timeline-item">
+                                <span class="time"><i class="ti ti-clock"></i> {{ log.timestamp|localtime }}</span>
+                                <p class="event">{{ log.evento }}</p>
+                            </li>
+                            {% else %}
+                            <li class="timeline-item"><p class="event">Nenhum evento registrado.</p></li>
+                            {% endfor %}
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+
     <div class="text-center mt-4">
-         <a href="{{ url_for('portal.login_portal') }}">Consultar outra OS</a>
+        <a href="{{ url_for('main.index') }}">Consultar outra OS</a>
     </div>
 {% endblock %}

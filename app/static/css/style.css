@@ -143,3 +143,102 @@ h1, h4, h5 {
 .status-em-reparo { background-color: #3498db; }
 .status-aguardando-retirada { background-color: #9b59b6; }
 .status-finalizado, .status-finalizado-e-pago { background-color: #2ecc71; }
+
+/* --- NOVOS ESTILOS PARA O PORTAL DO CLIENTE --- */
+
+/* Barra de Progresso */
+.progress-container {
+    width: 100%;
+    background-color: rgba(16, 18, 26, 0.7);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    padding: 4px;
+}
+
+.progress-bar {
+    height: 30px;
+    background-color: var(--primary-color);
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: width 1.5s ease-out;
+    box-shadow: 0 0 15px var(--glow-color);
+    text-shadow: 0 0 5px rgba(0,0,0,0.5);
+    color: var(--background-color);
+    font-weight: bold;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 1rem;
+}
+
+/* Tabela do Checklist */
+.checklist-table {
+    --bs-table-bg: transparent;
+    --bs-table-striped-bg: rgba(0, 174, 255, 0.05);
+}
+
+.checklist-table th {
+    font-family: 'Share Tech Mono', monospace;
+    color: var(--primary-color);
+}
+
+.checklist-table .status-ok,
+.checklist-table .status-defeito,
+.checklist-table .status-na {
+    font-size: 1.5rem;
+}
+
+.checklist-table .status-ok {
+    color: #2ecc71; /* Verde */
+}
+
+.checklist-table .status-defeito {
+    color: #e74c3c; /* Vermelho */
+}
+
+.checklist-table .status-na {
+    color: var(--text-muted-color); /* Cinza */
+}
+
+/* Estilos da Timeline (do template anterior, caso não existam) */
+.timeline {
+    list-style: none;
+    padding: 0;
+    position: relative;
+}
+.timeline:before {
+    content: '';
+    position: absolute;
+    top: 5px;
+    bottom: 5px;
+    left: 5px;
+    width: 2px;
+    background-color: var(--border-color);
+}
+.timeline-item {
+    margin-bottom: 20px;
+    position: relative;
+    padding-left: 25px;
+}
+.timeline-item:before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 5px;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    border: 2px solid var(--background-color);
+    box-shadow: 0 0 10px var(--glow-color);
+}
+.timeline-item .time {
+    display: block;
+    font-size: 0.8rem;
+    color: var(--text-muted-color);
+    margin-bottom: 5px;
+}
+.timeline-item .event {
+    margin: 0;
+    color: var(--text-color);
+}
