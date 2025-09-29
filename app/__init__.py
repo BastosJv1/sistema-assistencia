@@ -12,14 +12,14 @@ def format_datetime_local(dt, format='%d/%m/%Y às %H:%M'):
     if dt is None: return ""
     utc_tz = pytz.timezone('UTC')
     local_tz = pytz.timezone('America/Sao_Paulo')
+    # A linha abaixo faz a conversão e armazena o resultado em 'utc_dt'
     utc_dt = utc_tz.localize(dt).astimezone(local_tz)
-    return local_dt.strftime(format)
+    # A CORREÇÃO ESTÁ AQUI: trocamos 'local_dt' por 'utc_dt'
+    return utc_dt.strftime(format)
 
 def create_app():
     app = Flask(__name__)
     
-    # Configuração a partir de Variáveis de Ambiente (para produção)
-    # O segundo parâmetro é um valor padrão, usado quando rodamos localmente
     app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', 'uma-chave-secreta-default-para-dev')
     app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///oficina.db')
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
