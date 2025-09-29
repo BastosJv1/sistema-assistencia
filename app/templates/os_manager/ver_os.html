@@ -24,49 +24,39 @@
     {% endif %}
 
     <div class="row g-4 mt-2">
-        <div class="col-lg-7">
-            <div class="card mb-4">
-                <div class="card-header"><h4><i class="ti ti-photo"></i> Fotos do Reparo</h4></div>
-                <div class="card-body">
-                    <div class="row g-2 mb-3">
-                        {% for foto in os.fotos %}
-                        <div class="col-6 col-md-4 col-lg-3">
-                            <div class="position-relative">
-                                <a href="{{ url_for('static', filename='uploads/os_fotos/' + foto.filename) }}" target="_blank">
-                                    <img src="{{ url_for('static', filename='uploads/os_fotos/' + foto.filename) }}" class="img-fluid rounded" alt="Foto do reparo">
-                                </a>
-                                {% if foto.is_principal %}
-                                    <span class="badge bg-primary position-absolute top-0 start-0 m-1">Principal</span>
-                                {% else %}
-                                    <a href="{{ url_for('os_manager.set_foto_principal', os_id=os.id, foto_id=foto.id) }}" class="btn btn-sm btn-dark position-absolute top-0 start-0 m-1" title="Definir como Principal"><i class="ti ti-star"></i></a>
-                                {% endif %}
-                            </div>
-                        </div>
-                        {% else %}
-                        <p class="text-muted">Nenhuma foto enviada para esta OS.</p>
-                        {% endfor %}
-                    </div>
-                    <form method="POST" enctype="multipart/form-data">
-                        <input type="hidden" name="form_name" value="upload_fotos">
-                        <div class="input-group">
-                            <input class="form-control" type="file" id="fotos" name="fotos" multiple>
-                            <button type="submit" class="btn btn-outline-light">Enviar</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-
+        <div class="col-lg-6">
             <div class="card">
                 <div class="card-header"><h4><i class="ti ti-stethoscope"></i> Diagnóstico e Anotações Técnicas</h4></div>
                 <div class="card-body">
-                    <p class="text-muted fst-italic">
-                        {{ os.diagnostico_tecnico or "Nenhuma anotação técnica registrada." }}
-                    </p>
+                    <p class="text-muted fst-italic" style="white-space: pre-wrap;">{{ os.diagnostico_tecnico or "Nenhuma anotação técnica registrada." }}</p>
                 </div>
             </div>
         </div>
 
-        <div class="col-lg-5">
+        <div class="col-lg-6">
+            <div class="card mb-4">
+                <div class="card-header"><h4><i class="ti ti-currency-dollar"></i> Painel Financeiro</h4></div>
+                <div class="card-body">
+                    <ul class="list-group list-group-flush">
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Custo das Peças
+                            <span>R$ {{ "%.2f"|format(os.custo_pecas or 0.0) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            Valor do Serviço (Mão de Obra)
+                            <span>R$ {{ "%.2f"|format(os.valor_servico or 0.0) }}</span>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center">
+                            <strong>Valor Total para o Cliente</strong>
+                            <strong>R$ {{ "%.2f"|format(os.valor_total) }}</strong>
+                        </li>
+                        <li class="list-group-item d-flex justify-content-between align-items-center {% if lucro_bruto >= 0 %}text-success{% else %}text-danger{% endif %}">
+                            <strong>Lucro Bruto (Serviço - Peças)</strong>
+                            <strong>R$ {{ "%.2f"|format(lucro_bruto) }}</strong>
+                        </li>
+                    </ul>
+                </div>
+            </div>
             <div class="card mb-4">
                 <div class="card-header"><h4><i class="ti ti-settings"></i> Painel de Controle</h4></div>
                 <div class="card-body">
@@ -98,9 +88,6 @@
                             <button type="submit" class="btn btn-primary" {% if os.data_pagamento %}disabled{% endif %}>Salvar Alterações</button>
                         </div>
                     </form>
-                </div>
-                <div class="card-footer text-center">
-                    <h5 class="mb-0">Valor Total a Cobrar: R$ {{ "%.2f"|format(os.valor_total) }}</h5>
                 </div>
             </div>
 
@@ -156,5 +143,25 @@
           </form>
         </div>
       </div>
+    </div>
+    
+    <div class="modal fade" id="confirmDeleteModal" tabindex="-1" aria-labelledby="confirmDeleteModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="confirmDeleteModalLabel">Confirmar Exclusão</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Tem certeza que deseja excluir o item <strong id="delete-item-name"></strong>? Esta ação não pode ser desfeita.
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <form id="delete-form" method="POST" action="">
+                        <button type="submit" class="btn btn-danger">Excluir</button>
+                    </form>
+                </div>
+            </div>
+        </div>
     </div>
 {% endblock %}

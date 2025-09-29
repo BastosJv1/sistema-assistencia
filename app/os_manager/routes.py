@@ -1,5 +1,5 @@
 from flask import (
-    Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app
+    Blueprint, render_template, request, redirect, url_for, flash, send_file, current_app, jsonify
 )
 from flask_login import login_required
 # Importação Única e Limpa de todos os modelos necessários
@@ -8,9 +8,7 @@ from fpdf import FPDF
 import random
 from datetime import datetime
 from io import BytesIO
-from werkzeug.utils import secure_filename
 import os
-import uuid
 
 os_manager_bp = Blueprint('os_manager', __name__)
 
@@ -106,8 +104,10 @@ def criar_os():
 @login_required
 def ver_os(os_id):
     os_obj = OrdemServico.query.get_or_404(os_id)
+    
     if request.method == 'POST':
         form_name = request.form.get('form_name')
+        
         if form_name == 'update_status':
             novo_status = request.form.get('status')
             if os_obj.status != novo_status:
@@ -119,6 +119,7 @@ def ver_os(os_id):
             os_obj.diagnostico_tecnico = request.form.get('diagnostico_tecnico')
             db.session.commit()
             flash('Status e valores atualizados com sucesso!', 'success')
+            
         elif form_name == 'faturar_os':
             os_obj.metodo_pagamento = request.form.get('metodo_pagamento')
             os_obj.valor_pago = float(request.form.get('valor_pago') or 0)
@@ -130,37 +131,22 @@ def ver_os(os_id):
             db.session.add(log_status_final)
             db.session.commit()
             flash(f'OS Nº {os_obj.os_number} faturada com sucesso!', 'success')
-        elif form_name == 'upload_fotos':
-            files = request.files.getlist('fotos')
-            if not files or files[0].filename == '':
-                flash('Nenhuma foto selecionada para upload.', 'warning')
-            else:
-                for file in files:
-                    if file:
-                        filename = f"{uuid.uuid4().hex}_{secure_filename(file.filename)}"
-                        file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
-                        file.save(file_path)
-                        nova_foto = FotoOS(os_id=os_obj.id, filename=filename)
-                        if not os_obj.fotos:
-                            nova_foto.is_principal = True
-                        db.session.add(nova_foto)
-                db.session.commit()
-                flash(f'{len(files)} foto(s) enviada(s) com sucesso!', 'success')
+        
         return redirect(url_for('os_manager.ver_os', os_id=os_id))
+
+    # --- NOVO CÁLCULO DE LUCRO ---
+    custo_total = os_obj.custo_pecas or 0.0
+    mao_de_obra = os_obj.valor_servico or 0.0
+    lucro_bruto = mao_de_obra - custo_total
+    
     status_options = ['Em Análise', 'Aguardando Peça', 'Em Reparo', 'Aguardando Retirada', 'Finalizado', 'Finalizado e Pago']
     payment_options = ['PIX', 'Dinheiro', 'Cartão de Débito', 'Cartão de Crédito']
-    return render_template('os_manager/ver_os.html', os=os_obj, status_options=status_options, payment_options=payment_options)
-
-@os_manager_bp.route('/os/<int:os_id>/set_principal/<int:foto_id>')
-@login_required
-def set_foto_principal(os_id, foto_id):
-    FotoOS.query.filter_by(os_id=os_id).update({FotoOS.is_principal: False})
-    foto = FotoOS.query.get(foto_id)
-    if foto:
-        foto.is_principal = True
-        db.session.commit()
-        flash('Foto principal definida com sucesso!', 'success')
-    return redirect(url_for('os_manager.ver_os', os_id=os_id))
+    
+    return render_template('os_manager/ver_os.html', 
+                           os=os_obj, 
+                           status_options=status_options, 
+                           payment_options=payment_options,
+                           lucro_bruto=lucro_bruto) # Passando o lucro para o template
 
 @os_manager_bp.route('/os/<int:os_id>/pdf')
 @login_required
@@ -191,7 +177,6 @@ def gerar_pdf_os(os_id):
     pdf.cell(col_width, 6, tratar_texto(f"IMEI: {os.imei}"), 0, 1, 'L')
     pdf.ln(10)
     
-    # A CORREÇÃO DE INDENTAÇÃO ESTÁ AQUI
     pdf.set_font('Arial', 'B', 11)
     pdf.cell(0, 7, tratar_texto('DEFEITO RELATADO PELO CLIENTE'), 0, 1)
     pdf.set_font('Arial', '', 10)
